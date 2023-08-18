@@ -19,4 +19,15 @@ public class Lotto {
     }
 
     // TODO: 추가 기능 구현
+    public void showNumbers(){
+        StringBuilder str = new StringBuilder();
+        str.append("[");
+        for(int element : numbers){
+            str.append(element + ", ");
+        }
+        str.append("]");
+        str.deleteCharAt(str.length() -2);
+        str.deleteCharAt(str.length() -2);
+        System.out.println(str);
+    }
 }
