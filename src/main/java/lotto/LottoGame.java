@@ -3,12 +3,19 @@ package lotto;
 import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.Randoms;
 
+import java.util.List;
+
 public class LottoGame {
 
     private static LottoGame lottoGame = new LottoGame();
+
     private Lotto[] lottos;
 
     private int bonusNum;
+
+    private int[] winNumbers;
+
+    private int buyMoney;
 
     private LottoGame() {}
 
@@ -20,16 +27,10 @@ public class LottoGame {
         makeLottos();
     }
 
-    private void printLottos(){
-        for(Lotto element : lottos){
-            element.showNumbers();
-        }
-    }
-
     private void makeLottos() //로또를 만드는 함수
     {
         System.out.println("구입금액을 입력해 주세요.");
-        int buyMoney = Integer.parseInt(Console.readLine());
+        buyMoney = Integer.parseInt(Console.readLine());
         try{
             LottoException.getInstance().checkBuyMoney(buyMoney);
         }catch (IllegalArgumentException e) {
@@ -48,18 +49,21 @@ public class LottoGame {
     private void makeWinNumbers() //로또 번호를 만드는 함수
     {
         System.out.println("당첨 번호를 입력해 주세요.");
-        String winNumberStr = Console.readLine();
-        String[] winNumbers = winNumberStr.split(",");
+        String[] winNumberStr = Console.readLine().split(",");
         try{
-            LottoException.getInstance().checkWinNumbers(winNumbers);
+            LottoException.getInstance().checkWinNumbers(winNumberStr);
         }catch(IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;
         }
+        winNumbers = new int[winNumberStr.length];
+        for(int i = 0; i < winNumberStr.length; i++){
+            winNumbers[i] = Integer.parseInt(winNumberStr[i]);
+        }
         makeBonusNumber();
     }
 
-    private void makeBonusNumber()
+    private void makeBonusNumber() //로또 보너스 번호를 만드는 함수
     {
         System.out.println("보너스 번호를 입력해 주세요.");
         String bonusNumStr = Console.readLine();
@@ -70,5 +74,40 @@ public class LottoGame {
             return;
         }
         bonusNum = Integer.parseInt(bonusNumStr);
+        process();
     }
+
+    private void process()
+    {
+        int[][] result = new int[10][10];
+        for(Lotto lotto : lottos) {
+            int[] correct = lotto.checkNumbers(winNumbers, bonusNum);
+            if(correct[0] >= 3){
+                result[correct[0]][correct[1]] ++;
+            }
+        }
+        printWinLotto(result);
+        double profit = getWinLottoMoney(result) / buyMoney * 100;
+        System.out.printf(String.format("총 수익률은 %.1f", profit));
+        System.out.println("%입니다.");
+    }
+
+    private void printLottos(){
+        for(Lotto lotto : lottos){
+            lotto.showNumbers();
+        }
+    }
+
+    private void printWinLotto(int [][] result){
+        System.out.println("3개 일치 (5,000원) - " + result[3][0] + "개");
+        System.out.println("4개 일치 (50,000원) - " + result[4][0] + "개");
+        System.out.println("5개 일치 (1,500,000원) - " + result[5][0] + "개");
+        System.out.println("5개 일치, 보너스 볼 일치 (30,000,000원) - " + result[5][1] + "개");
+        System.out.println("6개 일치 (2,000,000,000원) - " + result[6][0] + "개");
+    }
+
+    private double getWinLottoMoney(int [][] result){
+        return (result[3][0] * 5000L + result[4][0] * 50000L + result[5][0] * 1500000L + result[5][1] * 30000000L + result[6][0] * 2000000000L);
+    }
+
 }
