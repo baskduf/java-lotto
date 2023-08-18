@@ -7,20 +7,28 @@ import java.util.List;
 
 public class LottoGame {
 
-    private static LottoGame lottoGame = new LottoGame();
-
+    final private static LottoGame lottoGame = new LottoGame();
     private Lotto[] lottos;
-
     private int bonusNum;
-
     private int[] winNumbers;
-
     private int buyMoney;
-
     private LottoGame() {}
-
     public static LottoGame getInstance() {
         return lottoGame;
+    }
+
+    private enum WinMoney {
+        MATCH_THREE(5000L),
+        MATCH_FOUR(50000L),
+        MATCH_FIVE(1500000L),
+        MATCH_FIVE_BONUS(30000000L),
+        MATCH_SIX(2000000000L);
+
+        private final long money;
+        WinMoney(long money) {
+            this.money = money;
+        }
+
     }
 
     public void start(){
@@ -77,7 +85,7 @@ public class LottoGame {
         process();
     }
 
-    private void process()
+    private void process() //로또 결과를 만드는 함수
     {
         int[][] result = new int[10][10];
         for(Lotto lotto : lottos) {
@@ -92,7 +100,7 @@ public class LottoGame {
         System.out.println("%입니다.");
     }
 
-    private void printLottos(){
+    private void printLottos(){ //로또 번호를 출력하는 함수
         for(Lotto lotto : lottos){
             lotto.showNumbers();
         }
@@ -107,7 +115,7 @@ public class LottoGame {
     }
 
     private double getWinLottoMoney(int [][] result){
-        return (result[3][0] * 5000L + result[4][0] * 50000L + result[5][0] * 1500000L + result[5][1] * 30000000L + result[6][0] * 2000000000L);
+        return (result[3][0] * WinMoney.MATCH_THREE.money + result[4][0] * WinMoney.MATCH_FOUR.money + result[5][0] * WinMoney.MATCH_FIVE.money + result[5][1] * WinMoney.MATCH_FIVE_BONUS.money + result[6][0] * WinMoney.MATCH_SIX.money);
     }
 
 }

@@ -3,7 +3,7 @@ package lotto;
 public class LottoException {
     //로또 예외처리 클래스
 
-    static private LottoException lottoException = new LottoException();
+    final static private LottoException lottoException = new LottoException();
     private LottoException() {}
 
     public static LottoException getInstance(){
